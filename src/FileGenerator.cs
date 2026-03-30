@@ -1,15 +1,28 @@
 using System.Diagnostics;
 using System.Net;
+using System.Xml;
 
 namespace MemoryAndSpan;
 
 public class FileGenerator
 {
-    private const string FILEPATH = "output.txt";
-    private const int MAX_LOG_ENTRIES = 100_000_000;
-
-    public void GenerateFile()
+    public void GenerateFile(int maxLogEntries = 10_000_000, string? customFileName = null)
     {
+        var folderPath = "../output";
+        var fileName = customFileName ?? "output.txt";
+
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+
+
+        var filePath = Path.Combine(folderPath, fileName);
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+        }
+
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
@@ -22,8 +35,8 @@ public class FileGenerator
             { 404, 5  }
         };
 
-        using StreamWriter sw = new(FILEPATH);
-        for (int i = 0; i < MAX_LOG_ENTRIES; i++)
+        using StreamWriter sw = new(filePath);
+        for (int i = 0; i < maxLogEntries; i++)
         {
             var randomStatusCodeValue = random.Next(0, 100);
             var logEntry = new LogFileEntry
@@ -39,7 +52,7 @@ public class FileGenerator
         }
         stopwatch.Stop();
 
-        var logFileSize = new FileInfo(FILEPATH).Length;
+        var logFileSize = new FileInfo(filePath).Length;
         Console.WriteLine($"Wrote a logfile with size: {logFileSize / (1024 * 1024)} MB. It took {stopwatch.Elapsed.TotalSeconds} seconds.");
     }
 
