@@ -1,0 +1,1 @@
+A simple project for learning how to use Memory<T> and Span<T> (and possible other performance types and patterns) in C#. 
